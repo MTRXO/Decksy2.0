@@ -1,35 +1,55 @@
-﻿<!DOCTYPE html>
+﻿﻿
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Decksy2._0</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <title>@ViewData["Title"] - Decksy</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Decksy2._0.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Decksy.styles.css" asp-append-version="true" />
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+
+
+
+        <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="light">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Decksy2._0</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand text-white" href="#">Decksy</a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarColor01">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+
+                <div class="collapse navbar-collapse" id="navbarColor01">
+                    <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-white no-hover active" href="#">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-white no-hover" href="#">Flashcards</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white no-hover" href="#">Pricing</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white no-hover" href="#">About</a>
                         </li>
                     </ul>
+
+
+                    <div class="d-flex gap-2">
+                        <a href="/login" class="btn btn-outline-light px-4">Log in</a>
+                        <a href="/register" class="btn btn-outline-light px-4">Sign up</a>
+                    </div>
+
                 </div>
             </div>
         </nav>
+
+
     </header>
     <div class="container">
         <main role="main" class="pb-3">
@@ -38,8 +58,8 @@
     </div>
 
     <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - Decksy2._0 - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        <div class="container" style="text-align:center">
+            Decksy - 2025
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

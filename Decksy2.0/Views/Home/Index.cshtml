@@ -1,8 +1,86 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿﻿<!-- Hero Section -->
+<section class="py-5 bg-primary text-white text-center mt-3">
+    <div class="container">
+        <h1 class="display-4 mb-3">Welcome to Decksy</h1>
+        <p class="lead mb-4">Create, manage, and learn your flashcards easily.</p>
+        <div class="d-flex justify-content-center gap-2">
+            <a href="/register" class="btn btn-light btn-lg">Get Started</a>
+            <a href="/login" class="btn btn-outline-light btn-lg">Log in</a>
+        </div>
+    </div>
+</section>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!-- Flashcards Preview Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">How it works?</h2>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+
+            <!-- Card 1 -->
+            <div class="col">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Breeze</h5>
+                        <p class="card-text text-muted blur-text">A gentle wind</p>
+                        <button class="btn btn-sm btn-outline-primary check-btn">Check</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="col">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Spark</h5>
+                        <p class="card-text text-muted blur-text">A small flash of light or energy</p>
+                        <button class="btn btn-sm btn-outline-primary check-btn">Check</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="col">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Nest</h5>
+                        <p class="card-text text-muted blur-text">A bird’s home made of twigs</p>
+                        <button class="btn btn-sm btn-outline-primary check-btn">Check</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="py-5 text-center bg-light">
+    <div class="container">
+        <h2 class="mb-3">Start Learning Today!</h2>
+        <p class="mb-4">Sign up and boost your learning with flashcards.</p>
+        <a href="/register" class="btn btn-primary btn-lg">Sign Up</a>
+    </div>
+</section>
+
+<!-- CSS -->
+<style>
+    .blur-text {
+        filter: blur(5px);
+        user-select: none;
+        transition: filter 0.3s;
+    }
+</style>
+
+<!-- JS -->
+<script>
+    const buttons = document.querySelectorAll('.check-btn');
+    buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Zamaz wszystkie definicje
+            document.querySelectorAll('.card-text').forEach(p => p.classList.add('blur-text'));
+            // Odsłoń tylko tę klikniętą
+            const text = btn.previousElementSibling;
+            text.classList.remove('blur-text');
+        });
+    });
+</script>
