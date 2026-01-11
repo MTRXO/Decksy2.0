@@ -1,22 +1,22 @@
-﻿﻿<!-- Hero Section -->
+﻿
 <section class="py-5 bg-primary text-white text-center mt-3">
     <div class="container">
         <h1 class="display-4 mb-3">Welcome to Decksy</h1>
         <p class="lead mb-4">Create, manage, and learn your flashcards easily.</p>
         <div class="d-flex justify-content-center gap-2">
             <a href="/register" class="btn btn-light btn-lg">Get Started</a>
-            <a href="/login" class="btn btn-outline-light btn-lg">Log in</a>
+            <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-light btn-lg">Log in</a>
         </div>
     </div>
 </section>
 
-<!-- Flashcards Preview Section -->
+
 <section class="py-5">
     <div class="container">
         <h2 class="text-center mb-4">How it works?</h2>
         <div class="row row-cols-1 row-cols-md-3 g-4">
 
-            <!-- Card 1 -->
+   
             <div class="col">
                 <div class="card h-100 text-center">
                     <div class="card-body">
@@ -27,7 +27,7 @@
                 </div>
             </div>
 
-            <!-- Card 2 -->
+        
             <div class="col">
                 <div class="card h-100 text-center">
                     <div class="card-body">
@@ -58,7 +58,7 @@
     <div class="container">
         <h2 class="mb-3">Start Learning Today!</h2>
         <p class="mb-4">Sign up and boost your learning with flashcards.</p>
-        <a href="/register" class="btn btn-primary btn-lg">Sign Up</a>
+        <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-primary btn-lg">Sign Up</a>
     </div>
 </section>
 
