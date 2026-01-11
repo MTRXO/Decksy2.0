@@ -8,6 +8,11 @@ html {
   }
 }
 
+.bg-primary {
+    background-color: dimgrey !important; 
+}
+
+
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
@@ -28,4 +33,13 @@ body {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
+}
+
+.form-check-input:checked {
+    border-color: black;
+    background-color: gray;
+}
+
+.button{
+    background-color:black;
 }

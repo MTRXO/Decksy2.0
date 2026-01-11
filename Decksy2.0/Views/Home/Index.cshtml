@@ -22,7 +22,7 @@
                     <div class="card-body">
                         <h5 class="card-title">Breeze</h5>
                         <p class="card-text text-muted blur-text">A gentle wind</p>
-                        <button class="btn btn-sm btn-outline-primary check-btn">Check</button>
+                        <button class="btn btn-sm btn-outline-dark check-btn">Check</button>
                     </div>
                 </div>
             </div>
@@ -33,18 +33,18 @@
                     <div class="card-body">
                         <h5 class="card-title">Spark</h5>
                         <p class="card-text text-muted blur-text">A small flash of light or energy</p>
-                        <button class="btn btn-sm btn-outline-primary check-btn">Check</button>
+                        <button  class="btn btn-sm btn-outline-dark check-btn">Check</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Card 3 -->
+           
             <div class="col">
                 <div class="card h-100 text-center">
                     <div class="card-body">
                         <h5 class="card-title">Nest</h5>
                         <p class="card-text text-muted blur-text">A bird’s home made of twigs</p>
-                        <button class="btn btn-sm btn-outline-primary check-btn">Check</button>
+                        <button class="btn btn-sm btn-outline-dark check-btn">Check</button>
                     </div>
                 </div>
             </div>
@@ -53,16 +53,15 @@
     </div>
 </section>
 
-<!-- Call to Action Section -->
+
 <section class="py-5 text-center bg-light">
     <div class="container">
         <h2 class="mb-3">Start Learning Today!</h2>
         <p class="mb-4">Sign up and boost your learning with flashcards.</p>
-        <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-primary btn-lg">Sign Up</a>
+        <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-dark btn-lg">Sign Up</a>
     </div>
 </section>
 
-<!-- CSS -->
 <style>
     .blur-text {
         filter: blur(5px);
@@ -71,14 +70,14 @@
     }
 </style>
 
-<!-- JS -->
+
 <script>
     const buttons = document.querySelectorAll('.check-btn');
     buttons.forEach(btn => {
         btn.addEventListener('click', () => {
-            // Zamaz wszystkie definicje
+            
             document.querySelectorAll('.card-text').forEach(p => p.classList.add('blur-text'));
-            // Odsłoń tylko tę klikniętą
+            
             const text = btn.previousElementSibling;
             text.classList.remove('blur-text');
         });
