@@ -14,23 +14,25 @@
     <div class="study-progress"><div class="study-progress-bar" id="progressBar"></div></div>
 
     <div id="studySession">
-        <button type="button" class="study-card" id="studyCard" aria-live="polite">
-            <span class="study-card-inner">
-                <span class="study-face study-front">
-                    <span class="study-label">Word</span>
-                    <span class="study-text" id="cardWord"></span>
-                    <span class="study-hint">Click or press Space to flip</span>
-                </span>
-                <span class="study-face study-back">
-                    <span class="study-label">Definition</span>
-                    <span class="study-text" id="cardDefinition"></span>
-                </span>
-            </span>
-        </button>
+        <div class="study-stack" id="studyStack">
+            <div class="study-card" id="studyCard" role="button" tabindex="0" aria-live="polite">
+                <span class="study-word" id="cardWord"></span>
+                <div class="study-answer">
+                    <div class="study-answer-inner">
+                        <span class="study-divider"></span>
+                        <span class="study-definition" id="cardDefinition"></span>
+                    </div>
+                </div>
+                <span class="study-hint">Tap the card or press Space to reveal</span>
+            </div>
+        </div>
 
-        <div class="study-actions">
-            <button type="button" class="btn btn-light btn-lg" id="againBtn" disabled>Still learning <kbd>1</kbd></button>
-            <button type="button" class="btn btn-dark btn-lg" id="knowBtn" disabled>I know it <kbd>2</kbd></button>
+        <div class="study-actions" id="revealActions">
+            <button type="button" class="btn btn-dark btn-lg" id="revealBtn">Show answer <kbd>Space</kbd></button>
+        </div>
+        <div class="study-actions study-actions-grade" id="gradeActions" hidden>
+            <button type="button" class="btn btn-light btn-lg btn-again" id="againBtn">&larr; Still learning <kbd>1</kbd></button>
+            <button type="button" class="btn btn-light btn-lg btn-know" id="knowBtn">I know it &rarr; <kbd>2</kbd></button>
         </div>
     </div>
 
@@ -52,18 +54,22 @@
             const allCards = @Json.Serialize(cards);
             const el = id => document.getElementById(id);
             const card = el('studyCard');
+            const stack = el('studyStack');
+            const exitDuration = 320;
 
             let queue = [];
             let index = 0;
             let known = 0;
             let missed = [];
-            let flipped = false;
+            let revealed = false;
+            let busy = false;
 
             function start(cards) {
                 queue = [...cards];
                 index = 0;
                 known = 0;
                 missed = [];
+                busy = false;
                 el('studySession').hidden = false;
                 el('studySummary').hidden = true;
                 render();
@@ -71,29 +77,45 @@
 
             function render() {
                 const current = queue[index];
-                setFlipped(false);
+                setRevealed(false);
                 el('cardWord').textContent = current.word;
                 el('cardDefinition').textContent = current.definition;
                 el('studyCounter').textContent = `Card ${index + 1} of ${queue.length}`;
                 el('progressBar').style.width = `${(index / queue.length) * 100}%`;
+                stack.dataset.remaining = Math.min(queue.length - index - 1, 2);
+
+                card.classList.remove('exit-left', 'exit-right');
+                card.classList.add('enter');
+                void card.offsetWidth; // apply the start position before animating in
+                card.classList.remove('enter');
             }
 
-            function setFlipped(value) {
-                flipped = value;
-                card.classList.toggle('is-flipped', flipped);
-                el('againBtn').disabled = !flipped;
-                el('knowBtn').disabled = !flipped;
+            function setRevealed(value) {
+                revealed = value;
+                card.classList.toggle('is-revealed', revealed);
+                el('revealActions').hidden = revealed;
+                el('gradeActions').hidden = !revealed;
+            }
+
+            function reveal() {
+                if (!busy && !revealed) setRevealed(true);
             }
 
             function answer(knewIt) {
-                if (!flipped) return;
+                if (!revealed || busy) return;
+                busy = true;
                 if (knewIt) known++; else missed.push(queue[index]);
-                index++;
-                if (index < queue.length) {
-                    render();
-                } else {
-                    finish();
-                }
+                card.classList.add(knewIt ? 'exit-right' : 'exit-left');
+
+                setTimeout(() => {
+                    busy = false;
+                    index++;
+                    if (index < queue.length) {
+                        render();
+                    } else {
+                        finish();
+                    }
+                }, exitDuration);
             }
 
             function finish() {
@@ -102,7 +124,7 @@
                 el('studySession').hidden = true;
                 el('studySummary').hidden = false;
                 el('summaryText').textContent = `You knew ${known} of ${queue.length} cards.`
-                    + (missed.length ? ` ${missed.length} still need practice.` : ' Perfect score!');
+                    + (missed.length ? ` ${missed.length} still ${missed.length === 1 ? 'needs' : 'need'} practice.` : ' Perfect score!');
                 el('reviewMissedBtn').hidden = missed.length === 0;
             }
 
@@ -115,7 +137,8 @@
                 return copy;
             }
 
-            card.addEventListener('click', () => setFlipped(!flipped));
+            card.addEventListener('click', reveal);
+            el('revealBtn').addEventListener('click', reveal);
             el('againBtn').addEventListener('click', () => answer(false));
             el('knowBtn').addEventListener('click', () => answer(true));
             el('shuffleBtn').addEventListener('click', () => start(shuffle(allCards)));
@@ -124,9 +147,9 @@
 
             document.addEventListener('keydown', e => {
                 if (el('studySession').hidden) return;
-                if (e.code === 'Space') { e.preventDefault(); setFlipped(!flipped); }
-                if (e.key === '1') answer(false);
-                if (e.key === '2') answer(true);
+                if (e.code === 'Space' || (e.key === 'Enter' && e.target === card)) { e.preventDefault(); reveal(); }
+                if (e.key === '1' || e.key === 'ArrowLeft') answer(false);
+                if (e.key === '2' || e.key === 'ArrowRight') answer(true);
             });
 
             start(allCards);
