@@ -4,7 +4,7 @@
     {
       "name": "decksy-preview",
       "runtimeExecutable": "dotnet",
-      "runtimeArgs": ["C:/Users/matek/AppData/Local/Temp/claude/D--Users-matek-source-repos-Decksy2-0/c3bf2315-815c-4d32-8f03-0e1742f7f617/scratchpad/out/Decksy2.0.dll", "--urls", "http://localhost:5199", "--contentRoot", "D:/Users/matek/source/repos/Decksy2.0/Decksy2.0", "--environment", "Development", "--ConnectionStrings:DefaultConnection", "Server=(localdb)\\MSSQLLocalDB;Database=DecksyPreviewTest;Trusted_Connection=True;TrustServerCertificate=True"],
+      "runtimeArgs": ["C:/Users/matek/AppData/Local/Temp/claude/D--Users-matek-source-repos-Decksy2-0/c3bf2315-815c-4d32-8f03-0e1742f7f617/scratchpad/out/Decksy2.0.dll", "--urls", "http://localhost:5199", "--contentRoot", "D:/Users/matek/source/repos/Decksy2.0/Decksy2.0", "--environment", "Development", "--ConnectionStrings:DefaultConnection", "Server=(localdb)\\MSSQLLocalDB;Database=DecksyPreviewTest2;Trusted_Connection=True;TrustServerCertificate=True"],
       "port": 5199
     }
   ]

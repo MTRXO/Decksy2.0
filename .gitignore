@@ -361,3 +361,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+# Local, machine-specific settings (connection strings etc.)
+appsettings.Local.json
+
+# Seed script with a real account (e-mail + password hash)
+Decksy2.0/Database/seed-test-data.sql
