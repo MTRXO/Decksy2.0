@@ -1,0 +1,85 @@
+@{
+    ViewData["Title"] = "About";
+    var signedIn = User.Identity?.IsAuthenticated == true;
+}
+
+<section class="about-intro">
+    <span class="eyebrow">About Decksy</span>
+    <h1 class="hero-title">Learning that sticks, one card at a time</h1>
+    <p class="hero-lead mx-0">
+        Decksy is a simple flashcard app for anyone who wants to remember more: new languages,
+        exam material, definitions or anything else worth knowing by heart.
+    </p>
+</section>
+
+<section class="section pt-0">
+    <h2 class="section-title mb-4">Why flashcards work</h2>
+    <div class="row row-cols-1 row-cols-md-3 g-3 g-lg-4">
+        <div class="col">
+            <div class="feature">
+                <div class="feature-icon">🧠</div>
+                <h3 class="feature-title">Active recall</h3>
+                <p class="feature-text">Trying to remember an answer before you see it builds much stronger memories than rereading notes.</p>
+            </div>
+        </div>
+        <div class="col">
+            <div class="feature">
+                <div class="feature-icon">🔁</div>
+                <h3 class="feature-title">Focused repetition</h3>
+                <p class="feature-text">Mark what you already know and review only the cards that still need practice.</p>
+            </div>
+        </div>
+        <div class="col">
+            <div class="feature">
+                <div class="feature-icon">⏱️</div>
+                <h3 class="feature-title">Short sessions</h3>
+                <p class="feature-text">A deck takes minutes to review, so it's easy to fit learning into a busy day.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <h2 class="section-title mb-4">How Decksy works</h2>
+    <ol class="steps surface">
+        <li class="step">
+            <span class="step-number">1</span>
+            <div>
+                <h3 class="step-title">Create a deck</h3>
+                <p class="step-text">Group related cards together, for example “Spanish verbs” or “Biology exam”.</p>
+            </div>
+        </li>
+        <li class="step">
+            <span class="step-number">2</span>
+            <div>
+                <h3 class="step-title">Add your cards</h3>
+                <p class="step-text">Each card has a word or question on the front and its definition on the back.</p>
+            </div>
+        </li>
+        <li class="step">
+            <span class="step-number">3</span>
+            <div>
+                <h3 class="step-title">Study and repeat</h3>
+                <p class="step-text">Flip cards, mark what you know, then review the ones you missed until they stick.</p>
+            </div>
+        </li>
+    </ol>
+</section>
+
+<section class="cta text-center">
+    @if (signedIn)
+    {
+        <h2 class="section-title">Ready for your next session?</h2>
+        <p class="text-secondary mb-4">Pick up where you left off or create a new deck.</p>
+        <a asp-controller="Flashcards" asp-action="Index" class="btn btn-dark btn-lg">Go to my decks</a>
+    }
+    else
+    {
+        <h2 class="section-title">Give Decksy a try</h2>
+        <p class="text-secondary mb-4">It's free. Create an account and build your first deck in minutes.</p>
+        <div class="d-flex justify-content-center gap-2 flex-wrap">
+            <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-dark btn-lg">Create account</a>
+            <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-light btn-lg">Log in</a>
+        </div>
+    }
+</section>

@@ -644,3 +644,74 @@ a {
   padding: 2.5rem 1.5rem;
   text-align: center;
 }
+
+/* About */
+.about-intro .hero-title {
+  max-width: 18ch;
+}
+
+.about-intro {
+  padding-block: 1rem 2.5rem;
+}
+
+.feature {
+  height: 100%;
+  padding: 1.5rem;
+  background: var(--dk-surface);
+  border: 1px solid var(--dk-border);
+  border-radius: var(--dk-radius);
+  box-shadow: var(--dk-shadow);
+}
+
+.feature-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 1rem;
+  border-radius: 10px;
+  background: var(--dk-subtle);
+  font-size: 1.25rem;
+}
+
+.feature-title,
+.step-title {
+  font-size: 1.05rem;
+  margin-bottom: .35rem;
+}
+
+.feature-text,
+.step-text {
+  margin: 0;
+  color: var(--dk-muted);
+}
+
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.step {
+  display: flex;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--dk-border);
+}
+
+.step:last-child {
+  border-bottom: 0;
+}
+
+.step-number {
+  flex-shrink: 0;
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--dk-accent);
+  color: #fff;
+  font-size: .9rem;
+  font-weight: 600;
+}
