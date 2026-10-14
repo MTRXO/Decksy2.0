@@ -1,0 +1,45 @@
+@model List<Decksy2._0.Controllers.DeckSummary>
+@{
+    ViewData["Title"] = "Flashcards";
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Your decks</h1>
+        <p class="text-secondary mb-0">Group your flashcards into decks and study them anytime.</p>
+    </div>
+</div>
+
+<partial name="_Alerts" />
+
+<form asp-action="CreateDeck" method="post" class="inline-form surface mb-4">
+    <input name="name" class="form-control" placeholder="New deck name, e.g. Spanish verbs" maxlength="100" required />
+    <button type="submit" class="btn btn-dark text-nowrap">Create deck</button>
+</form>
+
+@if (Model.Count == 0)
+{
+    <div class="empty-state">
+        <div class="empty-icon">🗂️</div>
+        <h2 class="h5">No decks yet</h2>
+        <p class="text-secondary mb-0">Create your first deck above to start adding flashcards.</p>
+    </div>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
+        @foreach (var deck in Model)
+        {
+            <div class="col">
+                <div class="deck-tile">
+                    <a asp-action="Deck" asp-route-id="@deck.Id" class="stretched-link deck-tile-name">@deck.Name</a>
+                    <span class="text-secondary small">@deck.CardCount @(deck.CardCount == 1 ? "card" : "cards")</span>
+                    @if (deck.CardCount > 0)
+                    {
+                        <a asp-action="Study" asp-route-id="@deck.Id" class="btn btn-light btn-sm deck-tile-action">Study</a>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}

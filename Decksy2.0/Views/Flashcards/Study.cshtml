@@ -1,0 +1,135 @@
+@model DecksyModel
+@{
+    ViewData["Title"] = "Study: " + Model.Name;
+    var cards = Model.Flashcards.Select(c => new { word = c.Word, definition = c.Definition });
+}
+
+<a asp-action="Deck" asp-route-id="@Model.Id" class="back-link">&larr; Back to @Model.Name</a>
+
+<div class="study">
+    <div class="study-top">
+        <span class="text-secondary small" id="studyCounter"></span>
+        <button type="button" class="btn btn-light btn-sm" id="shuffleBtn">Shuffle</button>
+    </div>
+    <div class="study-progress"><div class="study-progress-bar" id="progressBar"></div></div>
+
+    <div id="studySession">
+        <button type="button" class="study-card" id="studyCard" aria-live="polite">
+            <span class="study-card-inner">
+                <span class="study-face study-front">
+                    <span class="study-label">Word</span>
+                    <span class="study-text" id="cardWord"></span>
+                    <span class="study-hint">Click or press Space to flip</span>
+                </span>
+                <span class="study-face study-back">
+                    <span class="study-label">Definition</span>
+                    <span class="study-text" id="cardDefinition"></span>
+                </span>
+            </span>
+        </button>
+
+        <div class="study-actions">
+            <button type="button" class="btn btn-light btn-lg" id="againBtn" disabled>Still learning <kbd>1</kbd></button>
+            <button type="button" class="btn btn-dark btn-lg" id="knowBtn" disabled>I know it <kbd>2</kbd></button>
+        </div>
+    </div>
+
+    <div id="studySummary" class="study-summary surface" hidden>
+        <div class="empty-icon">🎉</div>
+        <h2 class="h4">Round complete</h2>
+        <p class="text-secondary" id="summaryText"></p>
+        <div class="d-flex justify-content-center gap-2 flex-wrap">
+            <button type="button" class="btn btn-dark" id="reviewMissedBtn">Review missed cards</button>
+            <button type="button" class="btn btn-light" id="restartBtn">Start over</button>
+            <a asp-action="Deck" asp-route-id="@Model.Id" class="btn btn-light">Back to deck</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (() => {
+            const allCards = @Json.Serialize(cards);
+            const el = id => document.getElementById(id);
+            const card = el('studyCard');
+
+            let queue = [];
+            let index = 0;
+            let known = 0;
+            let missed = [];
+            let flipped = false;
+
+            function start(cards) {
+                queue = [...cards];
+                index = 0;
+                known = 0;
+                missed = [];
+                el('studySession').hidden = false;
+                el('studySummary').hidden = true;
+                render();
+            }
+
+            function render() {
+                const current = queue[index];
+                setFlipped(false);
+                el('cardWord').textContent = current.word;
+                el('cardDefinition').textContent = current.definition;
+                el('studyCounter').textContent = `Card ${index + 1} of ${queue.length}`;
+                el('progressBar').style.width = `${(index / queue.length) * 100}%`;
+            }
+
+            function setFlipped(value) {
+                flipped = value;
+                card.classList.toggle('is-flipped', flipped);
+                el('againBtn').disabled = !flipped;
+                el('knowBtn').disabled = !flipped;
+            }
+
+            function answer(knewIt) {
+                if (!flipped) return;
+                if (knewIt) known++; else missed.push(queue[index]);
+                index++;
+                if (index < queue.length) {
+                    render();
+                } else {
+                    finish();
+                }
+            }
+
+            function finish() {
+                el('progressBar').style.width = '100%';
+                el('studyCounter').textContent = `${queue.length} of ${queue.length}`;
+                el('studySession').hidden = true;
+                el('studySummary').hidden = false;
+                el('summaryText').textContent = `You knew ${known} of ${queue.length} cards.`
+                    + (missed.length ? ` ${missed.length} still need practice.` : ' Perfect score!');
+                el('reviewMissedBtn').hidden = missed.length === 0;
+            }
+
+            function shuffle(cards) {
+                const copy = [...cards];
+                for (let i = copy.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [copy[i], copy[j]] = [copy[j], copy[i]];
+                }
+                return copy;
+            }
+
+            card.addEventListener('click', () => setFlipped(!flipped));
+            el('againBtn').addEventListener('click', () => answer(false));
+            el('knowBtn').addEventListener('click', () => answer(true));
+            el('shuffleBtn').addEventListener('click', () => start(shuffle(allCards)));
+            el('restartBtn').addEventListener('click', () => start(allCards));
+            el('reviewMissedBtn').addEventListener('click', () => start(missed));
+
+            document.addEventListener('keydown', e => {
+                if (el('studySession').hidden) return;
+                if (e.code === 'Space') { e.preventDefault(); setFlipped(!flipped); }
+                if (e.key === '1') answer(false);
+                if (e.key === '2') answer(true);
+            });
+
+            start(allCards);
+        })();
+    </script>
+}

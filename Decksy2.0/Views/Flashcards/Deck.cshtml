@@ -1,0 +1,92 @@
+@model DecksyModel
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<a asp-action="Index" class="back-link">&larr; All decks</a>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">@Model.Name</h1>
+        <p class="text-secondary mb-0">@Model.Flashcards.Count @(Model.Flashcards.Count == 1 ? "card" : "cards")</p>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+        @if (Model.Flashcards.Count > 0)
+        {
+            <a asp-action="Study" asp-route-id="@Model.Id" class="btn btn-dark">Study</a>
+        }
+        <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#renameDeck">Rename</button>
+        <form asp-action="DeleteDeck" asp-route-id="@Model.Id" method="post" class="m-0"
+              onsubmit="return confirm('Delete this deck and all of its cards?');">
+            <button type="submit" class="btn btn-light text-danger">Delete</button>
+        </form>
+    </div>
+</div>
+
+<partial name="_Alerts" />
+
+<div class="collapse" id="renameDeck">
+    <form asp-action="RenameDeck" asp-route-id="@Model.Id" method="post" class="inline-form surface mb-4">
+        <input name="name" class="form-control" value="@Model.Name" maxlength="100" required />
+        <button type="submit" class="btn btn-dark">Save</button>
+    </form>
+</div>
+
+<form asp-action="AddCard" method="post" class="surface card-form mb-4">
+    <input type="hidden" name="deckId" value="@Model.Id" />
+    <h2 class="h6 mb-3">Add a card</h2>
+    <div class="row g-2">
+        <div class="col-md-4">
+            <input name="word" class="form-control" placeholder="Word" maxlength="500" required autofocus />
+        </div>
+        <div class="col-md">
+            <input name="definition" class="form-control" placeholder="Definition" maxlength="500" required />
+        </div>
+        <div class="col-md-auto">
+            <button type="submit" class="btn btn-dark w-100">Add</button>
+        </div>
+    </div>
+</form>
+
+@if (Model.Flashcards.Count == 0)
+{
+    <div class="empty-state">
+        <div class="empty-icon">✍️</div>
+        <h2 class="h5">This deck is empty</h2>
+        <p class="text-secondary mb-0">Add your first card using the form above.</p>
+    </div>
+}
+else
+{
+    <ul class="card-list surface">
+        @foreach (var card in Model.Flashcards)
+        {
+            <li class="card-row">
+                <div class="card-row-view">
+                    <span class="card-row-word">@card.Word</span>
+                    <span class="card-row-definition">@card.Definition</span>
+                    <div class="card-row-actions">
+                        <button type="button" class="btn btn-sm btn-link" data-bs-toggle="collapse" data-bs-target="#edit-@card.Id">Edit</button>
+                        <form asp-action="DeleteCard" asp-route-id="@card.Id" method="post" class="m-0"
+                              onsubmit="return confirm('Delete this card?');">
+                            <button type="submit" class="btn btn-sm btn-link text-danger">Delete</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="collapse" id="edit-@card.Id">
+                    <form asp-action="EditCard" asp-route-id="@card.Id" method="post" class="row g-2 pt-3">
+                        <div class="col-md-4">
+                            <input name="word" class="form-control form-control-sm" value="@card.Word" maxlength="500" required />
+                        </div>
+                        <div class="col-md">
+                            <input name="definition" class="form-control form-control-sm" value="@card.Definition" maxlength="500" required />
+                        </div>
+                        <div class="col-md-auto">
+                            <button type="submit" class="btn btn-dark btn-sm w-100">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </li>
+        }
+    </ul>
+}

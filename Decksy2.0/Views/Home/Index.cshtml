@@ -9,7 +9,7 @@
     <div class="d-flex justify-content-center gap-2 flex-wrap">
         @if (User.Identity?.IsAuthenticated == true)
         {
-            <a href="#" class="btn btn-dark btn-lg">Go to my decks</a>
+            <a asp-controller="Flashcards" asp-action="Index" class="btn btn-dark btn-lg">Go to my decks</a>
         }
         else
         {
