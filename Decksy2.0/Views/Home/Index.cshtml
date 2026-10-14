@@ -1,85 +1,72 @@
-﻿
-<section class="py-5 bg-primary text-white text-center mt-3">
-    <div class="container">
-        <h1 class="display-4 mb-3">Welcome to Decksy</h1>
-        <p class="lead mb-4">Create, manage, and learn your flashcards easily.</p>
-        <div class="d-flex justify-content-center gap-2">
-            <a href="/register" class="btn btn-light btn-lg">Get Started</a>
-            <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-light btn-lg">Log in</a>
+@{
+    ViewData["Title"] = "Home";
+}
+
+<section class="hero text-center">
+    <span class="eyebrow">Flashcards, simplified</span>
+    <h1 class="hero-title">Learn faster with Decksy</h1>
+    <p class="hero-lead">Create, manage, and review your flashcards in one calm, distraction-free place.</p>
+    <div class="d-flex justify-content-center gap-2 flex-wrap">
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <a href="#" class="btn btn-dark btn-lg">Go to my decks</a>
+        }
+        else
+        {
+            <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-dark btn-lg">Get started</a>
+            <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-light btn-lg">Log in</a>
+        }
+    </div>
+</section>
+
+<section class="section">
+    <div class="text-center mb-4">
+        <h2 class="section-title">How it works</h2>
+        <p class="text-secondary mb-0">Read the word, think of the answer, then reveal it.</p>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-3 g-3 g-lg-4">
+        <div class="col">
+            <div class="flashcard">
+                <h3 class="flashcard-word">Breeze</h3>
+                <p class="flashcard-definition is-hidden">A gentle wind</p>
+                <button type="button" class="btn btn-light btn-sm reveal-btn">Reveal</button>
+            </div>
+        </div>
+        <div class="col">
+            <div class="flashcard">
+                <h3 class="flashcard-word">Spark</h3>
+                <p class="flashcard-definition is-hidden">A small flash of light or energy</p>
+                <button type="button" class="btn btn-light btn-sm reveal-btn">Reveal</button>
+            </div>
+        </div>
+        <div class="col">
+            <div class="flashcard">
+                <h3 class="flashcard-word">Nest</h3>
+                <p class="flashcard-definition is-hidden">A bird’s home made of twigs</p>
+                <button type="button" class="btn btn-light btn-sm reveal-btn">Reveal</button>
+            </div>
         </div>
     </div>
 </section>
 
+@if (User.Identity?.IsAuthenticated != true)
+{
+    <section class="cta text-center">
+        <h2 class="section-title">Start learning today</h2>
+        <p class="text-secondary mb-4">Sign up for free and build your first deck in minutes.</p>
+        <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-dark btn-lg">Create account</a>
+    </section>
+}
 
-<section class="py-5">
-    <div class="container">
-        <h2 class="text-center mb-4">How it works?</h2>
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-
-   
-            <div class="col">
-                <div class="card h-100 text-center">
-                    <div class="card-body">
-                        <h5 class="card-title">Breeze</h5>
-                        <p class="card-text text-muted blur-text">A gentle wind</p>
-                        <button class="btn btn-sm btn-outline-dark check-btn">Check</button>
-                    </div>
-                </div>
-            </div>
-
-        
-            <div class="col">
-                <div class="card h-100 text-center">
-                    <div class="card-body">
-                        <h5 class="card-title">Spark</h5>
-                        <p class="card-text text-muted blur-text">A small flash of light or energy</p>
-                        <button  class="btn btn-sm btn-outline-dark check-btn">Check</button>
-                    </div>
-                </div>
-            </div>
-
-           
-            <div class="col">
-                <div class="card h-100 text-center">
-                    <div class="card-body">
-                        <h5 class="card-title">Nest</h5>
-                        <p class="card-text text-muted blur-text">A bird’s home made of twigs</p>
-                        <button class="btn btn-sm btn-outline-dark check-btn">Check</button>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
-
-
-<section class="py-5 text-center bg-light">
-    <div class="container">
-        <h2 class="mb-3">Start Learning Today!</h2>
-        <p class="mb-4">Sign up and boost your learning with flashcards.</p>
-        <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-dark btn-lg">Sign Up</a>
-    </div>
-</section>
-
-<style>
-    .blur-text {
-        filter: blur(5px);
-        user-select: none;
-        transition: filter 0.3s;
-    }
-</style>
-
-
-<script>
-    const buttons = document.querySelectorAll('.check-btn');
-    buttons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            
-            document.querySelectorAll('.card-text').forEach(p => p.classList.add('blur-text'));
-            
-            const text = btn.previousElementSibling;
-            text.classList.remove('blur-text');
+@section Scripts {
+    <script>
+        document.querySelectorAll('.reveal-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const definition = btn.previousElementSibling;
+                const hidden = definition.classList.toggle('is-hidden');
+                btn.textContent = hidden ? 'Reveal' : 'Hide';
+            });
         });
-    });
-</script>
+    </script>
+}

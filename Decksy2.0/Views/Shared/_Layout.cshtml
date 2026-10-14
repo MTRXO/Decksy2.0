@@ -1,87 +1,81 @@
-﻿﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Decksy</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Decksy.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
+    <header class="site-header sticky-top">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <span class="brand-mark">D</span>
+                    Decksy
+                </a>
 
-
-
-        <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="light">
-            <div class="container-fluid">
-                <a class="navbar-brand text-white" href="#">Decksy</a>
-
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#navbarColor01">
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <div class="collapse navbar-collapse" id="navbarColor01">
-                    <ul class="navbar-nav me-auto">
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav mx-lg-auto">
                         <li class="nav-item">
-                            <a asp-controller="Home" class="nav-link text-white no-hover active">Home</a>
+                            <a class="nav-link active" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white no-hover" href="#">Flashcards</a>
+                            <a class="nav-link" href="#">Flashcards</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white no-hover" href="#">Pricing</a>
+                            <a class="nav-link" href="#">Pricing</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white no-hover" href="#">About</a>
+                            <a class="nav-link" href="#">About</a>
                         </li>
                     </ul>
 
-
-                    <div class="d-flex gap-2 align-items-center">
-
-                        @if (User.Identity.IsAuthenticated)
+                    <div class="d-flex gap-2 align-items-center py-2 py-lg-0">
+                        @if (User.Identity?.IsAuthenticated == true)
                         {
-                            <span class="text-white me-2">
-                                👤 @User.Identity.Name
-                            </span>
+                            <a class="user-chip" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage account">
+                                <span class="user-avatar">@(User.Identity.Name?.Substring(0, 1).ToUpper())</span>
+                                <span class="d-none d-sm-inline">@User.Identity.Name</span>
+                            </a>
 
-                            <form asp-area="Identity" asp-page="/Account/Logout" method="post">
-                                <button type="submit" class="btn btn-outline-light px-4">
-                                    Wyloguj
-                                </button>
+                            <form asp-area="Identity" asp-page="/Account/Logout" method="post" class="m-0">
+                                <button type="submit" class="btn btn-light btn-sm">Wyloguj</button>
                             </form>
                         }
                         else
                         {
-                            <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-light px-4">Log in</a>
-                            <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-outline-light px-4">Sign up</a>
-                            
+                            <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-light btn-sm">Log in</a>
+                            <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-dark btn-sm">Sign up</a>
                         }
-
-                       
-                      
                     </div>
-
-
                 </div>
             </div>
         </nav>
-
-
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container" style="text-align:center">
-            Decksy - 2025
+    <main role="main" class="flex-grow-1 py-4 py-lg-5">
+        <div class="container">
+            @RenderBody()
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container d-flex flex-column flex-sm-row justify-content-between gap-2">
+            <span>&copy; 2025 Decksy</span>
+            <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
