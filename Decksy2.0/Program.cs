@@ -15,10 +15,10 @@ builder.Configuration
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException(
-        "Connection string 'DefaultConnection' not found. Copy appsettings.Local.example.json to appsettings.Local.json and set your database server.");
+        "Connection string 'DefaultConnection' not found. Set it in appsettings.json, appsettings.Local.json or the ConnectionStrings__DefaultConnection environment variable.");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString, sql => sql.EnableRetryOnFailure()));
+    options.UseSqlite(connectionString));
 
 // Keep the keys that encrypt login cookies in a persistent folder (e.g. a Docker volume),
 // otherwise every redeploy logs all users out.
@@ -61,8 +61,7 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// On a fresh server create/upgrade the database schema at startup.
-// Off by default so it never touches an existing database unless asked to.
+// Create/upgrade the SQLite database file at startup (enabled in appsettings.json).
 if (app.Configuration.GetValue<bool>("Database:MigrateOnStartup"))
 {
     using var scope = app.Services.CreateScope();

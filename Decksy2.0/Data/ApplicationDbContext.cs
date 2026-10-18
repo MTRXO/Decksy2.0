@@ -1,5 +1,4 @@
-﻿using Microsoft.Identity;
-using Decksy2._0.Models;
+﻿using Decksy2._0.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 namespace Decksy2._0.Data;

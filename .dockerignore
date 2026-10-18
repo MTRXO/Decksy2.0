@@ -11,3 +11,8 @@ publish/
 **/appsettings.Local.json
 **/appsettings.Local.example.json
 **/Database/seed-test-data.sql
+
+# Local SQLite database
+**/*.db
+**/*.db-shm
+**/*.db-wal

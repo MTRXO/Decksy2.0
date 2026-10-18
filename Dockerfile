@@ -13,8 +13,8 @@ RUN dotnet publish Decksy2.0/Decksy2.0.csproj -c Release -o /app/publish --no-re
 FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
 
-# Folder for the cookie encryption keys (mounted as a volume in docker-compose)
-RUN mkdir -p /app/keys && chown app:app /app/keys
+# Folders for the SQLite database and the cookie encryption keys (volumes in docker-compose)
+RUN mkdir -p /app/data /app/keys && chown app:app /app/data /app/keys
 
 COPY --from=build /app/publish .
 
