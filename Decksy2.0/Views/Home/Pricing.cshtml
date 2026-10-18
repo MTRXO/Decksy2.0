@@ -1,0 +1,98 @@
+@{
+    ViewData["Title"] = "Pricing";
+    var signedIn = User.Identity?.IsAuthenticated == true;
+}
+
+<section class="text-center pricing-intro">
+    <span class="eyebrow">Pricing</span>
+    <h1 class="hero-title">Simple plans for every learner</h1>
+    <p class="hero-lead">Start for free and upgrade when you need more. No hidden fees.</p>
+
+    <div class="billing-toggle" role="group" aria-label="Billing period">
+        <button type="button" class="billing-option is-active" data-period="monthly">Monthly</button>
+        <button type="button" class="billing-option" data-period="yearly">
+            Yearly <span class="billing-save">-20%</span>
+        </button>
+    </div>
+</section>
+
+<section class="row row-cols-1 row-cols-md-2 g-3 g-lg-4 align-items-stretch justify-content-center plans">
+    <div class="col">
+        <div class="plan tone-1">
+            <h2 class="plan-name">Free</h2>
+            <p class="plan-description">Everything you need to start learning.</p>
+            <div class="plan-price">
+                <span class="plan-amount">$0</span>
+                <span class="plan-period">forever</span>
+            </div>
+            @if (signedIn)
+            {
+                <a asp-controller="Flashcards" asp-action="Index" class="btn btn-light w-100">Go to my decks</a>
+            }
+            else
+            {
+                <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-light w-100">Get started</a>
+            }
+            <ul class="plan-features">
+                <li>Unlimited decks &amp; flashcards</li>
+                <li>Study mode with progress</li>
+                <li>Shuffle &amp; review missed cards</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="plan plan-featured tone-0">
+            <span class="plan-badge">Most popular</span>
+            <h2 class="plan-name">Pro</h2>
+            <p class="plan-description">For students who study every day.</p>
+            <div class="plan-price">
+                <span class="plan-amount" data-monthly="$4" data-yearly="$3.20">$4</span>
+                <span class="plan-period" data-monthly="/ month" data-yearly="/ mo, billed yearly">/ month</span>
+            </div>
+            <button type="button" class="btn btn-dark w-100" disabled>Coming soon</button>
+            <ul class="plan-features">
+                <li>Everything in Free</li>
+                <li>Study statistics</li>
+                <li>Import &amp; export decks</li>
+                <li>Priority support</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <h2 class="section-title text-center mb-4">Frequently asked questions</h2>
+    <div class="faq surface">
+        <details class="faq-item">
+            <summary>Is the Free plan really free?</summary>
+            <p>Yes. You can create decks, add cards and study without paying anything and without a credit card.</p>
+        </details>
+        <details class="faq-item">
+            <summary>When will Pro be available?</summary>
+            <p>We're still building it. Until then every account gets all current features for free.</p>
+        </details>
+        <details class="faq-item">
+            <summary>Will I lose my decks if I change plans?</summary>
+            <p>No. Your decks and cards always stay in your account, whichever plan you use.</p>
+        </details>
+        <details class="faq-item">
+            <summary>Can I cancel at any time?</summary>
+            <p>Yes. Paid plans will be billed monthly or yearly and can be cancelled whenever you like.</p>
+        </details>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.billing-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const period = option.dataset.period;
+                document.querySelectorAll('.billing-option').forEach(o => o.classList.toggle('is-active', o === option));
+                document.querySelectorAll('[data-monthly]').forEach(el => {
+                    el.textContent = el.dataset[period];
+                });
+            });
+        });
+    </script>
+}

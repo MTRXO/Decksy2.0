@@ -1,0 +1,13 @@
+**/bin/
+**/obj/
+**/.vs/
+**/*.user
+.git/
+.claude/
+publish/
+.env
+
+# Local secrets and personal data must never end up in the image
+**/appsettings.Local.json
+**/appsettings.Local.example.json
+**/Database/seed-test-data.sql

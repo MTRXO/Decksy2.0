@@ -6,7 +6,7 @@
 
 <a asp-action="Deck" asp-route-id="@Model.Id" class="back-link">&larr; Back to @Model.Name</a>
 
-<div class="study">
+<div class="study tone-@(Model.Id % 6)">
     <div class="study-top">
         <span class="text-secondary small" id="studyCounter"></span>
         <button type="button" class="btn btn-light btn-sm" id="shuffleBtn">Shuffle</button>

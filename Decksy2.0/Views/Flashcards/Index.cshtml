@@ -31,7 +31,8 @@ else
         @foreach (var deck in Model)
         {
             <div class="col">
-                <div class="deck-tile">
+                <div class="deck-tile tone-@(deck.Id % 6)">
+                    <span class="deck-badge">@deck.Name.Substring(0, 1).ToUpper()</span>
                     <a asp-action="Deck" asp-route-id="@deck.Id" class="stretched-link deck-tile-name">@deck.Name</a>
                     <span class="text-secondary small">@deck.CardCount @(deck.CardCount == 1 ? "card" : "cards")</span>
                     @if (deck.CardCount > 0)

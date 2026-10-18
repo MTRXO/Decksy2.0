@@ -366,3 +366,6 @@ appsettings.Local.json
 
 # Seed script with a real account (e-mail + password hash)
 Decksy2.0/Database/seed-test-data.sql
+
+# Server secrets for docker-compose
+.env

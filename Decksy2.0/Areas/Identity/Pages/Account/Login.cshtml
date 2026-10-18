@@ -28,7 +28,8 @@
                     @Html.DisplayNameFor(m => m.Input.RememberMe)
                 </label>
             </div>
-            <a id="forgot-password" asp-page="./ForgotPassword" class="small">Forgot password?</a>
+            @* Hidden until the app can send e-mails:
+            <a id="forgot-password" asp-page="./ForgotPassword" class="small">Forgot password?</a> *@
         </div>
         <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-dark">Log in</button>
     </form>
@@ -38,7 +39,8 @@
             No account?
             <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="fw-medium text-body">Sign up</a>
         </span>
-        <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
+        @* Hidden until the app can send e-mails:
+        <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a> *@
     </div>
 </div>
 
