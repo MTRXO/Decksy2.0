@@ -1132,3 +1132,83 @@ a {
   padding: 0 1.25rem 1rem;
   color: var(--dk-muted);
 }
+
+/* ---------- Home: How it works (interactive demo) ---------- */
+.how-it-works .eyebrow {
+  margin-bottom: .75rem;
+}
+
+.how-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: .5rem;
+}
+
+.how-step {
+  display: flex;
+  gap: .9rem;
+  padding: .9rem 1rem;
+  border: 1px solid transparent;
+  border-radius: var(--dk-radius);
+  transition: background-color .25s, border-color .25s, box-shadow .25s;
+}
+
+.how-step.is-active {
+  background: var(--dk-surface);
+  border-color: var(--dk-border);
+  box-shadow: var(--dk-shadow);
+}
+
+.how-step-number {
+  flex-shrink: 0;
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--dk-subtle);
+  color: var(--dk-muted);
+  font-size: .85rem;
+  font-weight: 600;
+  transition: background-color .25s, color .25s;
+}
+
+.how-step.is-active .how-step-number {
+  background: var(--dk-accent);
+  color: #fff;
+}
+
+.how-step-title {
+  font-size: 1rem;
+  margin: .2rem 0 .15rem;
+}
+
+.how-step-text {
+  margin: 0;
+  color: var(--dk-muted);
+  font-size: .9rem;
+}
+
+.demo {
+  max-width: none;
+}
+
+.demo .study-card {
+  min-height: 240px;
+}
+
+.demo-score {
+  color: var(--dk-muted);
+}
+
+.demo-score-know {
+  color: #059669;
+  font-weight: 600;
+}
+
+.demo-score-again {
+  color: #d97706;
+  font-weight: 600;
+}

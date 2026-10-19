@@ -19,32 +19,88 @@
     </div>
 </section>
 
-<section class="section">
-    <div class="text-center mb-4">
-        <h2 class="section-title">How it works</h2>
-        <p class="text-secondary mb-0">Read the word, think of the answer, then reveal it.</p>
-    </div>
+<section class="section how-it-works">
+    <div class="row g-4 g-lg-5 align-items-center">
+        <div class="col-lg-5">
+            <span class="eyebrow">How it works</span>
+            <h2 class="section-title">Try a study session right here</h2>
+            <p class="text-secondary mb-4">This is exactly how learning works in Decksy. Give it a go with the cards <span class="d-none d-lg-inline">on the right</span><span class="d-lg-none">below</span>.</p>
 
-    <div class="row row-cols-1 row-cols-md-3 g-3 g-lg-4">
-        <div class="col">
-            <div class="flashcard tone-0">
-                <h3 class="flashcard-word">Breeze</h3>
-                <p class="flashcard-definition is-hidden">A gentle wind</p>
-                <button type="button" class="btn btn-light btn-sm reveal-btn">Reveal</button>
-            </div>
+            <ol class="how-steps">
+                <li class="how-step is-active" data-step="1">
+                    <span class="how-step-number">1</span>
+                    <div>
+                        <h3 class="how-step-title">Read the word</h3>
+                        <p class="how-step-text">Think of the answer before you look.</p>
+                    </div>
+                </li>
+                <li class="how-step" data-step="2">
+                    <span class="how-step-number">2</span>
+                    <div>
+                        <h3 class="how-step-title">Reveal the answer</h3>
+                        <p class="how-step-text">Tap the card and check if you were right.</p>
+                    </div>
+                </li>
+                <li class="how-step" data-step="3">
+                    <span class="how-step-number">3</span>
+                    <div>
+                        <h3 class="how-step-title">Mark what you know</h3>
+                        <p class="how-step-text">Cards you miss come back until they stick.</p>
+                    </div>
+                </li>
+            </ol>
         </div>
-        <div class="col">
-            <div class="flashcard tone-1">
-                <h3 class="flashcard-word">Spark</h3>
-                <p class="flashcard-definition is-hidden">A small flash of light or energy</p>
-                <button type="button" class="btn btn-light btn-sm reveal-btn">Reveal</button>
-            </div>
-        </div>
-        <div class="col">
-            <div class="flashcard tone-2">
-                <h3 class="flashcard-word">Nest</h3>
-                <p class="flashcard-definition is-hidden">A bird’s home made of twigs</p>
-                <button type="button" class="btn btn-light btn-sm reveal-btn">Reveal</button>
+
+        <div class="col-lg-7">
+            <div class="study demo tone-0">
+                <div class="study-top">
+                    <span class="text-secondary small" id="demoCounter"></span>
+                    <span class="demo-score small">
+                        <span class="demo-score-know" id="demoKnown">0</span> known ·
+                        <span class="demo-score-again" id="demoLearning">0</span> learning
+                    </span>
+                </div>
+                <div class="study-progress"><div class="study-progress-bar" id="demoProgress"></div></div>
+
+                <div id="demoSession">
+                    <div class="study-stack" id="demoStack">
+                        <div class="study-card" id="demoCard" role="button" tabindex="0" aria-live="polite">
+                            <span class="study-word" id="demoWord"></span>
+                            <div class="study-answer">
+                                <div class="study-answer-inner">
+                                    <span class="study-divider"></span>
+                                    <span class="study-definition" id="demoDefinition"></span>
+                                </div>
+                            </div>
+                            <span class="study-hint">Tap the card to reveal the answer</span>
+                        </div>
+                    </div>
+
+                    <div class="study-actions" id="demoReveal">
+                        <button type="button" class="btn btn-dark btn-lg" id="demoRevealBtn">Show answer</button>
+                    </div>
+                    <div class="study-actions study-actions-grade" id="demoGrade" hidden>
+                        <button type="button" class="btn btn-light btn-lg btn-again" id="demoAgainBtn">&larr; Still learning</button>
+                        <button type="button" class="btn btn-light btn-lg btn-know" id="demoKnowBtn">I know it &rarr;</button>
+                    </div>
+                </div>
+
+                <div class="study-summary surface" id="demoSummary" hidden>
+                    <div class="empty-icon">🎉</div>
+                    <h3 class="h5">That's a study session!</h3>
+                    <p class="text-secondary" id="demoSummaryText"></p>
+                    <div class="d-flex justify-content-center gap-2 flex-wrap">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <a asp-controller="Flashcards" asp-action="Index" class="btn btn-dark">Go to my decks</a>
+                        }
+                        else
+                        {
+                            <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-dark">Create your own deck</a>
+                        }
+                        <button type="button" class="btn btn-light" id="demoRestartBtn">Try again</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -61,12 +117,96 @@
 
 @section Scripts {
     <script>
-        document.querySelectorAll('.reveal-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const definition = btn.previousElementSibling;
-                const hidden = definition.classList.toggle('is-hidden');
-                btn.textContent = hidden ? 'Reveal' : 'Hide';
+        (() => {
+            const cards = [
+                { word: 'breeze', definition: 'A gentle, light wind.' },
+                { word: 'gracias', definition: 'Spanish for “thank you”.' },
+                { word: 'Photosynthesis', definition: 'How plants turn light, water and CO₂ into sugar and oxygen.' },
+                { word: 'serendipity', definition: 'Finding something good without looking for it.' },
+                { word: 'Primary key', definition: 'A column that uniquely identifies each row in a table.' }
+            ];
+            const el = id => document.getElementById(id);
+            const card = el('demoCard');
+            const exitDuration = 320;
+
+            let index = 0, known = 0, learning = 0, revealed = false, busy = false;
+
+            function setStep(step) {
+                document.querySelectorAll('.how-step').forEach(s =>
+                    s.classList.toggle('is-active', Number(s.dataset.step) === step));
+            }
+
+            function render() {
+                const current = cards[index];
+                setRevealed(false);
+                el('demoWord').textContent = current.word;
+                el('demoDefinition').textContent = current.definition;
+                el('demoCounter').textContent = `Card ${index + 1} of ${cards.length}`;
+                el('demoProgress').style.width = `${(index / cards.length) * 100}%`;
+                el('demoStack').dataset.remaining = Math.min(cards.length - index - 1, 2);
+
+                card.classList.remove('exit-left', 'exit-right');
+                card.classList.add('enter');
+                void card.offsetWidth; // apply the start position before animating in
+                card.classList.remove('enter');
+            }
+
+            function setRevealed(value) {
+                revealed = value;
+                card.classList.toggle('is-revealed', revealed);
+                el('demoReveal').hidden = revealed;
+                el('demoGrade').hidden = !revealed;
+                setStep(revealed ? 2 : 1);
+            }
+
+            function reveal() {
+                if (!busy && !revealed) setRevealed(true);
+            }
+
+            function answer(knewIt) {
+                if (!revealed || busy) return;
+                busy = true;
+                setStep(3);
+                if (knewIt) known++; else learning++;
+                el('demoKnown').textContent = known;
+                el('demoLearning').textContent = learning;
+                card.classList.add(knewIt ? 'exit-right' : 'exit-left');
+
+                setTimeout(() => {
+                    busy = false;
+                    index++;
+                    if (index < cards.length) render(); else finish();
+                }, exitDuration);
+            }
+
+            function finish() {
+                el('demoProgress').style.width = '100%';
+                el('demoCounter').textContent = `${cards.length} of ${cards.length}`;
+                el('demoSession').hidden = true;
+                el('demoSummary').hidden = false;
+                el('demoSummaryText').textContent =
+                    `You knew ${known} of ${cards.length} cards. In your own decks, the ones you missed come back for review.`;
+            }
+
+            function restart() {
+                index = 0; known = 0; learning = 0;
+                el('demoKnown').textContent = 0;
+                el('demoLearning').textContent = 0;
+                el('demoSession').hidden = false;
+                el('demoSummary').hidden = true;
+                render();
+            }
+
+            card.addEventListener('click', reveal);
+            card.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.code === 'Space') { e.preventDefault(); reveal(); }
             });
-        });
+            el('demoRevealBtn').addEventListener('click', reveal);
+            el('demoAgainBtn').addEventListener('click', () => answer(false));
+            el('demoKnowBtn').addEventListener('click', () => answer(true));
+            el('demoRestartBtn').addEventListener('click', restart);
+
+            render();
+        })();
     </script>
 }
