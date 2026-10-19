@@ -96,6 +96,28 @@ scp root@IP_SERWERA:/opt/decksy/backup-*.db .
 
 Warto też włączyć automatyczne kopie serwera w panelu Hetznera (Backups, +20% ceny serwera).
 
+## Nadawanie wersji Pro
+
+Testy ze słówek działają tylko dla kont z Pro. Pro nadajesz ręcznie (konto musi już istnieć):
+
+```bash
+cd /opt/decksy && docker compose exec app dotnet Decksy2.0.dll grant-pro adres@email.com
+```
+
+Odebranie Pro:
+
+```bash
+docker compose exec app dotnet Decksy2.0.dll revoke-pro adres@email.com
+```
+
+Lista kont z Pro:
+
+```bash
+docker compose exec app dotnet Decksy2.0.dll list-pro
+```
+
+Zmiana działa od razu – użytkownik nie musi się wylogowywać.
+
 ## Gdy coś nie działa
 
 | Objaw | Co sprawdzić |

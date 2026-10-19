@@ -1,17 +1,22 @@
 using Decksy2._0.Data;
+using Decksy2._0.Services;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-var builder = WebApplication.CreateBuilder(args);
+// "grant-pro <email>", "revoke-pro <email>" and "list-pro" run an admin command instead of the website.
+var isAdminCommand = ProAccess.IsCommand(args);
+var hostArgs = isAdminCommand ? Array.Empty<string>() : args;
+
+var builder = WebApplication.CreateBuilder(hostArgs);
 
 // Machine-specific settings (e.g. the connection string) live in appsettings.Local.json,
 // which is git-ignored. Environment variables and command-line args still take precedence.
 builder.Configuration
     .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables()
-    .AddCommandLine(args);
+    .AddCommandLine(hostArgs);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException(
@@ -43,6 +48,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
 })
+.AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.ConfigureApplicationCookie(options =>
@@ -68,6 +74,13 @@ if (app.Configuration.GetValue<bool>("Database:MigrateOnStartup"))
     scope.ServiceProvider.GetRequiredService<ApplicationDbContext>().Database.Migrate();
 }
 
+await ProAccess.EnsureRoleAsync(app.Services);
+
+if (isAdminCommand)
+{
+    return await ProAccess.RunCommandAsync(app.Services, args);
+}
+
 app.UseForwardedHeaders();
 
 if (!app.Environment.IsDevelopment())
@@ -89,3 +102,4 @@ app.MapControllerRoute(
 app.MapRazorPages();
 
 app.Run();
+return 0;

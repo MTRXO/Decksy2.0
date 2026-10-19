@@ -1,0 +1,355 @@
+@model Decksy2._0.Controllers.TestViewModel
+@{
+    var deck = Model.Deck;
+    ViewData["Title"] = "Test: " + deck.Name;
+}
+
+<a asp-action="Deck" asp-route-id="@deck.Id" class="back-link">&larr; Back to @deck.Name</a>
+
+@if (!Model.IsPro)
+{
+    <div class="quiz-locked surface tone-0">
+        <div class="quiz-lock-icon">🔒</div>
+        <span class="plan-badge-inline">Pro</span>
+        <h1 class="h3 mt-2">Vocabulary tests are a Pro feature</h1>
+        <p class="text-secondary">
+            Test yourself on <strong>@deck.Name</strong> with multiple-choice or typed answers
+            and see exactly which words you still need to practise.
+        </p>
+        <div class="d-flex justify-content-center gap-2 flex-wrap">
+            <a asp-controller="Home" asp-action="Pricing" class="btn btn-dark">See Pro plan</a>
+            <a asp-action="Study" asp-route-id="@deck.Id" class="btn btn-light">Study instead</a>
+        </div>
+    </div>
+}
+else
+{
+    var cards = deck.Flashcards.Select(c => new { word = c.Word, definition = c.Definition });
+
+    <div class="study quiz tone-@(deck.Id % 6)">
+        @* ---------- Setup ---------- *@
+        <div id="quizSetup" class="quiz-setup surface">
+            <span class="plan-badge-inline">Pro</span>
+            <h1 class="h3 mt-2 mb-1">Test: @deck.Name</h1>
+            <p class="text-secondary mb-4">@deck.Flashcards.Count @(deck.Flashcards.Count == 1 ? "card" : "cards") in this deck</p>
+
+            <div class="quiz-field">
+                <span class="quiz-label">Mode</span>
+                <div class="quiz-segment" id="modeOptions">
+                    <button type="button" class="quiz-option" data-mode="choice">
+                        <strong>Multiple choice</strong>
+                        <span>See the word, pick the right definition</span>
+                    </button>
+                    <button type="button" class="quiz-option" data-mode="typing">
+                        <strong>Type the answer</strong>
+                        <span>See the definition, type the word</span>
+                    </button>
+                </div>
+                <p class="quiz-note" id="choiceNote" hidden>Multiple choice needs at least 4 cards with different definitions.</p>
+            </div>
+
+            <div class="quiz-field">
+                <span class="quiz-label">Questions</span>
+                <div class="quiz-counts" id="countOptions"></div>
+            </div>
+
+            <button type="button" class="btn btn-dark btn-lg w-100" id="startBtn">Start test</button>
+        </div>
+
+        @* ---------- Questions ---------- *@
+        <div id="quizSession" hidden>
+            <div class="study-top">
+                <span class="text-secondary small" id="quizCounter"></span>
+                <span class="small text-secondary"><span class="demo-score-know" id="quizScore">0</span> correct</span>
+            </div>
+            <div class="study-progress"><div class="study-progress-bar" id="quizProgress"></div></div>
+
+            <div class="quiz-card">
+                <span class="quiz-prompt-label" id="promptLabel"></span>
+                <span class="quiz-prompt" id="prompt"></span>
+            </div>
+
+            <div class="quiz-choices" id="choices" hidden></div>
+
+            <form class="quiz-typing" id="typingForm" hidden autocomplete="off">
+                <input class="form-control form-control-lg" id="typingInput" placeholder="Type the word…" autocapitalize="off" spellcheck="false" />
+                <button type="submit" class="btn btn-dark btn-lg" id="checkBtn">Check</button>
+            </form>
+
+            <div class="quiz-feedback" id="feedback" hidden></div>
+
+            <button type="button" class="btn btn-dark btn-lg w-100 mt-3" id="nextBtn" hidden>Next <kbd>Enter</kbd></button>
+        </div>
+
+        @* ---------- Results ---------- *@
+        <div id="quizResults" class="quiz-results surface" hidden>
+            <div class="quiz-score-ring" id="resultPercent"></div>
+            <h2 class="h4 mb-1" id="resultTitle"></h2>
+            <p class="text-secondary" id="resultText"></p>
+
+            <div id="mistakesBlock" hidden>
+                <h3 class="quiz-label text-start mt-4">To practise</h3>
+                <ul class="quiz-mistakes" id="mistakes"></ul>
+            </div>
+
+            <div class="d-flex justify-content-center gap-2 flex-wrap mt-4">
+                <button type="button" class="btn btn-dark" id="retryMistakesBtn">Retry mistakes</button>
+                <button type="button" class="btn btn-light" id="newTestBtn">New test</button>
+                <a asp-action="Deck" asp-route-id="@deck.Id" class="btn btn-light">Back to deck</a>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        <script>
+            (() => {
+                const allCards = @Json.Serialize(cards);
+                const el = id => document.getElementById(id);
+
+                // ---------- Helpers ----------
+                const normalize = s => s
+                    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+                    .replace(/ł/g, 'l').replace(/Ł/g, 'L')
+                    .toLowerCase()
+                    .replace(/[¿?¡!.,;:"'()]/g, '')
+                    .replace(/\s+/g, ' ')
+                    .trim();
+
+                function distance(a, b) {
+                    const row = Array.from({ length: b.length + 1 }, (_, i) => i);
+                    for (let i = 1; i <= a.length; i++) {
+                        let prev = row[0];
+                        row[0] = i;
+                        for (let j = 1; j <= b.length; j++) {
+                            const tmp = row[j];
+                            row[j] = Math.min(row[j] + 1, row[j - 1] + 1, prev + (a[i - 1] === b[j - 1] ? 0 : 1));
+                            prev = tmp;
+                        }
+                    }
+                    return row[b.length];
+                }
+
+                function shuffle(items) {
+                    const copy = [...items];
+                    for (let i = copy.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [copy[i], copy[j]] = [copy[j], copy[i]];
+                    }
+                    return copy;
+                }
+
+                // ---------- Setup ----------
+                const uniqueDefinitions = new Set(allCards.map(c => normalize(c.definition))).size;
+                const choiceAvailable = uniqueDefinitions >= 4;
+                let mode = choiceAvailable ? 'choice' : 'typing';
+                let count = Math.min(10, allCards.length);
+
+                document.querySelectorAll('#modeOptions .quiz-option').forEach(btn => {
+                    if (btn.dataset.mode === 'choice' && !choiceAvailable) {
+                        btn.disabled = true;
+                        el('choiceNote').hidden = false;
+                    }
+                    btn.addEventListener('click', () => { mode = btn.dataset.mode; renderSetup(); });
+                });
+
+                const countChoices = [...new Set([5, 10, 20].filter(n => n < allCards.length).concat(allCards.length))];
+                countChoices.forEach(n => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'quiz-count';
+                    btn.dataset.count = n;
+                    btn.textContent = n === allCards.length ? `All (${n})` : n;
+                    btn.addEventListener('click', () => { count = n; renderSetup(); });
+                    el('countOptions').appendChild(btn);
+                });
+                if (!countChoices.includes(count)) count = countChoices[0];
+
+                function renderSetup() {
+                    document.querySelectorAll('#modeOptions .quiz-option').forEach(b => b.classList.toggle('is-active', b.dataset.mode === mode));
+                    document.querySelectorAll('#countOptions .quiz-count').forEach(b => b.classList.toggle('is-active', Number(b.dataset.count) === count));
+                }
+
+                // ---------- Session ----------
+                let questions = [];
+                let index = 0;
+                let score = 0;
+                let mistakes = [];
+                let answered = false;
+
+                function start(cards) {
+                    questions = cards;
+                    index = 0;
+                    score = 0;
+                    mistakes = [];
+                    el('quizScore').textContent = 0;
+                    el('quizSetup').hidden = true;
+                    el('quizResults').hidden = true;
+                    el('quizSession').hidden = false;
+                    showQuestion();
+                }
+
+                function showQuestion() {
+                    const q = questions[index];
+                    answered = false;
+                    el('quizCounter').textContent = `Question ${index + 1} of ${questions.length}`;
+                    el('quizProgress').style.width = `${(index / questions.length) * 100}%`;
+                    el('feedback').hidden = true;
+                    el('nextBtn').hidden = true;
+
+                    if (mode === 'choice') {
+                        el('promptLabel').textContent = 'What does this mean?';
+                        el('prompt').textContent = q.word;
+                        el('typingForm').hidden = true;
+                        renderChoices(q);
+                    } else {
+                        el('promptLabel').textContent = 'Which word is it?';
+                        el('prompt').textContent = q.definition;
+                        el('choices').hidden = true;
+                        el('typingForm').hidden = false;
+                        el('typingInput').value = '';
+                        el('typingInput').disabled = false;
+                        el('typingInput').className = 'form-control form-control-lg';
+                        el('checkBtn').disabled = false;
+                        el('typingInput').focus();
+                    }
+                }
+
+                function renderChoices(q) {
+                    const correct = normalize(q.definition);
+                    const seen = new Set([correct]);
+                    const distractors = [];
+                    for (const c of shuffle(allCards)) {
+                        const key = normalize(c.definition);
+                        if (!seen.has(key)) { seen.add(key); distractors.push(c.definition); }
+                        if (distractors.length === 3) break;
+                    }
+
+                    const box = el('choices');
+                    box.replaceChildren();
+                    shuffle([q.definition, ...distractors]).forEach((text, i) => {
+                        const btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.className = 'quiz-choice';
+                        btn.dataset.correct = normalize(text) === correct;
+                        const key = document.createElement('kbd');
+                        key.textContent = i + 1;
+                        const label = document.createElement('span');
+                        label.textContent = text;
+                        btn.append(key, label);
+                        btn.addEventListener('click', () => pickChoice(btn));
+                        box.appendChild(btn);
+                    });
+                    box.hidden = false;
+                }
+
+                function pickChoice(btn) {
+                    if (answered) return;
+                    const buttons = [...el('choices').children];
+                    buttons.forEach(b => {
+                        b.disabled = true;
+                        if (b.dataset.correct === 'true') b.classList.add('is-correct');
+                    });
+                    const ok = btn.dataset.correct === 'true';
+                    if (!ok) btn.classList.add('is-wrong');
+                    finishAnswer(ok, btn.querySelector('span').textContent);
+                }
+
+                function checkTyping() {
+                    if (answered) return;
+                    const q = questions[index];
+                    const given = el('typingInput').value;
+                    if (!given.trim()) { el('typingInput').focus(); return; }
+
+                    const a = normalize(given);
+                    const b = normalize(q.word);
+                    const exact = a === b;
+                    const typo = !exact && b.length >= 5 && distance(a, b) === 1;
+
+                    el('typingInput').disabled = true;
+                    el('checkBtn').disabled = true;
+                    el('typingInput').classList.add(exact || typo ? 'is-valid' : 'is-invalid');
+                    finishAnswer(exact || typo, given, typo);
+                }
+
+                function finishAnswer(ok, given, typo = false) {
+                    answered = true;
+                    const q = questions[index];
+                    if (ok) {
+                        score++;
+                        el('quizScore').textContent = score;
+                    } else {
+                        mistakes.push({ ...q, given });
+                    }
+
+                    const fb = el('feedback');
+                    fb.className = 'quiz-feedback ' + (ok ? 'is-correct' : 'is-wrong');
+                    const answer = mode === 'choice' ? q.definition : q.word;
+                    fb.textContent = ok
+                        ? (typo ? `Almost! Correct spelling: ${answer}` : 'Correct!')
+                        : `Not quite. Correct answer: ${answer}`;
+                    fb.hidden = false;
+
+                    el('nextBtn').textContent = index + 1 < questions.length ? 'Next ' : 'See results ';
+                    const key = document.createElement('kbd');
+                    key.textContent = 'Enter';
+                    el('nextBtn').appendChild(key);
+                    el('nextBtn').hidden = false;
+                    el('nextBtn').focus();
+                }
+
+                function next() {
+                    if (!answered) return;
+                    index++;
+                    if (index < questions.length) showQuestion(); else showResults();
+                }
+
+                function showResults() {
+                    el('quizSession').hidden = true;
+                    el('quizResults').hidden = false;
+                    const percent = Math.round((score / questions.length) * 100);
+                    el('resultPercent').textContent = `${percent}%`;
+                    el('resultPercent').style.setProperty('--p', percent);
+                    el('resultTitle').textContent = percent === 100 ? 'Perfect score!' : percent >= 70 ? 'Great job!' : 'Keep practising!';
+                    el('resultText').textContent = `You got ${score} of ${questions.length} right.`;
+
+                    const list = el('mistakes');
+                    list.replaceChildren();
+                    mistakes.forEach(m => {
+                        const li = document.createElement('li');
+                        const word = document.createElement('strong');
+                        word.textContent = m.word;
+                        const def = document.createElement('span');
+                        def.textContent = m.definition;
+                        const given = document.createElement('small');
+                        given.textContent = `Your answer: ${m.given}`;
+                        li.append(word, def, given);
+                        list.appendChild(li);
+                    });
+                    el('mistakesBlock').hidden = mistakes.length === 0;
+                    el('retryMistakesBtn').hidden = mistakes.length === 0;
+                }
+
+                // ---------- Events ----------
+                el('startBtn').addEventListener('click', () => start(shuffle(allCards).slice(0, count)));
+                el('typingForm').addEventListener('submit', e => { e.preventDefault(); checkTyping(); });
+                el('nextBtn').addEventListener('click', next);
+                el('retryMistakesBtn').addEventListener('click', () => start(shuffle(mistakes.map(({ word, definition }) => ({ word, definition })))));
+                el('newTestBtn').addEventListener('click', () => {
+                    el('quizResults').hidden = true;
+                    el('quizSetup').hidden = false;
+                });
+
+                document.addEventListener('keydown', e => {
+                    if (el('quizSession').hidden) return;
+                    if (e.key === 'Enter' && answered) { e.preventDefault(); next(); return; }
+                    if (mode === 'choice' && !answered && /^[1-4]$/.test(e.key)) {
+                        const btn = el('choices').children[Number(e.key) - 1];
+                        if (btn) pickChoice(btn);
+                    }
+                });
+
+                renderSetup();
+            })();
+        </script>
+    }
+}

@@ -14,6 +14,7 @@
         @if (Model.Flashcards.Count > 0)
         {
             <a asp-action="Study" asp-route-id="@Model.Id" class="btn btn-dark">Study</a>
+            <a asp-action="Test" asp-route-id="@Model.Id" class="btn btn-light">Test <span class="plan-badge-inline">Pro</span></a>
         }
         <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#renameDeck">Rename</button>
         <form asp-action="DeleteDeck" asp-route-id="@Model.Id" method="post" class="m-0"
