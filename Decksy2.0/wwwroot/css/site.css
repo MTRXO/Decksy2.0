@@ -84,14 +84,9 @@ a {
 }
 
 .brand-mark {
-  display: inline-grid;
-  place-items: center;
+  display: block;
   width: 28px;
   height: 28px;
-  border-radius: 8px;
-  background: var(--dk-accent);
-  color: #fff;
-  font-size: .9rem;
 }
 
 .navbar .nav-link {
