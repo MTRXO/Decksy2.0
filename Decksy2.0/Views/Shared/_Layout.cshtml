@@ -3,9 +3,11 @@
     var action = ViewContext.RouteData.Values["action"] as string;
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" translate="no">
 <head>
     <meta charset="utf-8" />
+    @* Stop browsers (e.g. Chrome) from offering to translate the page on every visit *@
+    <meta name="google" content="notranslate" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Decksy</title>
     <link rel="icon" href="~/favicon.ico" sizes="32x32" asp-append-version="true" />
