@@ -98,7 +98,8 @@ Warto też włączyć automatyczne kopie serwera w panelu Hetznera (Backups, +20
 
 ## Nadawanie wersji Pro
 
-Testy ze słówek działają tylko dla kont z Pro. Pro nadajesz ręcznie (konto musi już istnieć):
+Na razie żadna funkcja nie wymaga Pro (plan Pro jest „Coming soon”), ale rolę można już nadawać
+na przyszłość, np. przed wprowadzeniem płatności. Pro nadajesz ręcznie (konto musi już istnieć):
 
 ```bash
 cd /opt/decksy && docker compose exec app dotnet Decksy2.0.dll grant-pro adres@email.com

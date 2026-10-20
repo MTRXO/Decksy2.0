@@ -1,9 +1,7 @@
 using System.Security.Claims;
 using Decksy2._0.Data;
 using Decksy2._0.Models;
-using Decksy2._0.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,12 +14,10 @@ namespace Decksy2._0.Controllers
         private const int MaxTextLength = 500;
 
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
 
-        public FlashcardsController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public FlashcardsController(ApplicationDbContext context)
         {
             _context = context;
-            _userManager = userManager;
         }
 
         private string UserId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -216,7 +212,7 @@ namespace Decksy2._0.Controllers
             return View(deck);
         }
 
-        // GET /Flashcards/Test/5 (Pro feature)
+        // GET /Flashcards/Test/5
         public async Task<IActionResult> Test(int id)
         {
             var deck = await FindDeckAsync(id, withCards: true);
@@ -224,20 +220,16 @@ namespace Decksy2._0.Controllers
             {
                 return NotFound();
             }
-
-            var isPro = await ProAccess.IsProAsync(_userManager, User);
-            if (isPro && deck.Flashcards.Count == 0)
+            if (deck.Flashcards.Count == 0)
             {
                 TempData["Error"] = "Add some cards before you start a test.";
                 return RedirectToAction(nameof(Deck), new { id });
             }
 
             deck.Flashcards = deck.Flashcards.OrderBy(c => c.Id).ToList();
-            return View(new TestViewModel(deck, isPro));
+            return View(deck);
         }
     }
 
     public record DeckSummary(int Id, string Name, int CardCount);
-
-    public record TestViewModel(DecksyModel Deck, bool IsPro);
 }

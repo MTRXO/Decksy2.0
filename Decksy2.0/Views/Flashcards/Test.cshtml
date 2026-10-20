@@ -1,36 +1,16 @@
-@model Decksy2._0.Controllers.TestViewModel
+@model DecksyModel
 @{
-    var deck = Model.Deck;
+    var deck = Model;
     ViewData["Title"] = "Test: " + deck.Name;
+    var cards = deck.Flashcards.Select(c => new { word = c.Word, definition = c.Definition });
 }
 
 <a asp-action="Deck" asp-route-id="@deck.Id" class="back-link">&larr; Back to @deck.Name</a>
 
-@if (!Model.IsPro)
-{
-    <div class="quiz-locked surface tone-0">
-        <div class="quiz-lock-icon">🔒</div>
-        <span class="plan-badge-inline">Pro</span>
-        <h1 class="h3 mt-2">Vocabulary tests are a Pro feature</h1>
-        <p class="text-secondary">
-            Test yourself on <strong>@deck.Name</strong> with multiple-choice or typed answers
-            and see exactly which words you still need to practise.
-        </p>
-        <div class="d-flex justify-content-center gap-2 flex-wrap">
-            <a asp-controller="Home" asp-action="Pricing" class="btn btn-dark">See Pro plan</a>
-            <a asp-action="Study" asp-route-id="@deck.Id" class="btn btn-light">Study instead</a>
-        </div>
-    </div>
-}
-else
-{
-    var cards = deck.Flashcards.Select(c => new { word = c.Word, definition = c.Definition });
-
     <div class="study quiz tone-@(deck.Id % 6)">
         @* ---------- Setup ---------- *@
         <div id="quizSetup" class="quiz-setup surface">
-            <span class="plan-badge-inline">Pro</span>
-            <h1 class="h3 mt-2 mb-1">Test: @deck.Name</h1>
+            <h1 class="h3 mb-1">Test: @deck.Name</h1>
             <p class="text-secondary mb-4">@deck.Flashcards.Count @(deck.Flashcards.Count == 1 ? "card" : "cards") in this deck</p>
 
             <div class="quiz-field">
@@ -352,4 +332,3 @@ else
             })();
         </script>
     }
-}
